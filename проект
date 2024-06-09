@@ -1,0 +1,20 @@
+import asyncio
+from aiogram import Bot, Dispatcher
+from loguru import logger
+from bot.config import config
+from bot.commands import get_bot_commands, register_message_handler
+from bot.utils.tasks import background_check
+async def main():
+bot = Bot(token=config.TOKEN)
+dispatcher = Dispatcher()
+loop = asyncio.get_event_loop()
+register_message_handler(router=dispatcher)
+bot_commands = get_bot_commands()
+await bot.set_my_commands(commands=bot_commands)
+loop.create_task(background_check(bot=bot))
+await dispatcher.start_polling(bot)
+if __name__ == "__main__":
+try:
+asyncio.run(main())
+except (KeyboardInterrupt, SystemExit):
+logger.info("Goodbye!")
